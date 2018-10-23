@@ -112,13 +112,13 @@ end
 
 hcat(args::AbstractExpr...) = HcatAtom(args...)
 hcat(args::AbstractExprOrValue...) = HcatAtom([convert(AbstractExpr, arg) for arg in args]...)
-hcat(args::Value...) = Base.cat(2, args...)
+hcat(args::Value...) = Base.cat(args..., dims=2)
 
 
 # TODO: implement vertical concatenation in a more efficient way
 vcat(args::AbstractExpr...) = transpose(HcatAtom([transpose(arg) for arg in args]...))
 vcat(args::AbstractExprOrValue...) = transpose(HcatAtom([transpose(convert(AbstractExpr, arg)) for arg in args]...))
-vcat(args::Value...) = Base.cat(1, args...) # Note: this makes general vcat slower for anyone using Convex...
+vcat(args::Value...) = Base.cat(args..., dims=1) # Note: this makes general vcat slower for anyone using Convex...
 
 
 Base.vect(args::T...) where {T<:AbstractExpr} = transpose(HcatAtom([transpose(arg) for arg in args]...))
