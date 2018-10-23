@@ -66,8 +66,7 @@ TOL = 1e-3
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test isapprox(p.optval, 17.7831, atol=TOL)
-# TODO: fix iterate(::Convex.MultiplyAtom)
-#   @test isapprox((evaluate(quadoverlin(A * x + b, c * x + d)))[1], 17.7831, atol=TOL)
+    @test isapprox((evaluate(quadoverlin(A * x + b, c * x + d)))[1], 17.7831, atol=TOL)
   end
 
   @testset "sum squares atom" begin
