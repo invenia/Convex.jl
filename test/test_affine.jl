@@ -305,27 +305,26 @@ eye(n) = Matrix(Diagonal(ones(n)))
 
   end
 
-  @testset "diagm atom" begin
+  @testset "Diagonal atom" begin
     x = Variable(2, 2)
-    @test_throws Exception diagm(x)
+    @test_throws Exception Diagonal(x)
 
     x = Variable(4)
-    p = minimize(sum(diagm(x)), x == [1; 2; 3; 4])
+    p = minimize(sum(Diagonal(x)), x == [1; 2; 3; 4])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test isapprox(p.optval, 10, atol=TOL)
-# TODO: fix diagm(x)
-#   @test all(abs.(evaluate(diagm(x)) - diagm([1; 2; 3; 4])) .<= TOL)
+    @test all(abs.(evaluate(Diagonal(x)) - Diagonal([1; 2; 3; 4])) .<= TOL)
 
     x = Variable(3)
     c = [1; 2; 3]
-    p = minimize(c' * diagm(x) * c, x >= 1, sum(x) == 10)
+    p = minimize(c' * Diagonal(x) * c, x >= 1, sum(x) == 10)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test isapprox(p.optval, 21, atol=TOL)
 
     x = Variable(3)
-    p = minimize(sum(x), x >= 1, diagm(x)[1, 2] == 1)
+    p = minimize(sum(x), x >= 1, Diagonal(x)[1, 2] == 1)
     @test solve!(p) == nothing
     @test p.status != :Optimal
   end
