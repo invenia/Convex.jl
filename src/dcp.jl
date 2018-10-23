@@ -141,3 +141,7 @@ struct ComplexSign <: Sign                end
 *(s::ComplexSign, v::ConcaveVexity) = NotDcp()
 *(s::ComplexSign, v::NotDcp) = v
 *(v::Vexity, s::ComplexSign) = s*v
+
+# we need these for Julia 1.0
++(x::Array{Float64,2}, y::Float64) = x .+ y
++(x::Float64, y::Array{Float64,2}) = x .+ y
