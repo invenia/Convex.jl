@@ -73,7 +73,7 @@ end
 function ProductToSimpleInequalities(first_power::Int, second_power::Int)
   # Construct the first InequalityExpression, which is an inequality
   # of the form x^n <= t^p1 s^p2.
-  assert(first_power > 0 && second_power > 0);
+  @assert first_power > 0 && second_power > 0;
   n = first_power + second_power;
   var_list = [1, 2, 3];
   init_inequality = InequalityExpression(first_power, second_power, 0,

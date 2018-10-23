@@ -45,16 +45,15 @@ TOL = 1e-3
     @test isapprox(evaluate(norm2(A * x + b) + lambda * norm_1(x)), 15.4907, atol=TOL)
   end
 
-# TODO: fix ambiguity
-# @testset "frobenius norm atom" begin
-#   m = Variable(4, 5)
-#   c = [m[3, 3] == 4, m >= 1]
-#   p = minimize(vecnorm(m, 2), c)
-#   @test vexity(p) == ConvexVexity()
-#   solve!(p)
-#   @test isapprox(p.optval, sqrt(35), atol=TOL)
-#   @test isapprox(evaluate(vecnorm(m, 2)), sqrt(35), atol=TOL)
-# end
+  @testset "frobenius norm atom" begin
+    m = Variable(4, 5)
+    c = [m[3, 3] == 4, m >= 1]
+    p = minimize(vecnorm(m, 2), c)
+    @test vexity(p) == ConvexVexity()
+    solve!(p)
+    @test isapprox(p.optval, sqrt(35), atol=TOL)
+    @test isapprox(evaluate(vecnorm(m, 2)), sqrt(35), atol=TOL)
+  end
 
   @testset "quad over lin atom" begin
     x = Variable(3, 1)
@@ -179,18 +178,17 @@ TOL = 1e-3
     @test isapprox(evaluate(sum(huber(x, 1))), 9, atol=TOL)
   end
 
-# @testset "rational norm atom" begin
-#   A = [1 2 3; -1 2 3]
-#   b = A * ones(3)
-#   x = Variable(3)
-# TODO: fix norm ambiguity
-#   p = minimize(norm(x, 4.5), [A * x == b])
-#   @test vexity(p) == ConvexVexity()
+  @testset "rational norm atom" begin
+    A = [1 2 3; -1 2 3]
+    b = A * ones(3)
+    x = Variable(3)
+    p = minimize(norm(x, 4.5), [A * x == b])
+    @test vexity(p) == ConvexVexity()
     # Solution is approximately x = [1, .93138, 1.04575]
-#   solve!(p)
-#   @test isapprox(p.optval, 1.2717, atol=TOL)
-#   @test isapprox(evaluate(norm(x, 4.5)), 1.2717, atol=TOL)
-# end
+    solve!(p)
+    @test isapprox(p.optval, 1.2717, atol=TOL)
+    @test isapprox(evaluate(norm(x, 4.5)), 1.2717, atol=TOL)
+  end
 
 # @testset "rational norm dual norm" begin
 # TODO: fix norm ambiguity
