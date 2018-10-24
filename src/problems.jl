@@ -231,7 +231,7 @@ maximize(solver::MathProgBase.AbstractMathProgSolver,
 satisfy(solver::MathProgBase.AbstractMathProgSolver, constraints::Constraint...) = 
   Problem(:minimize, solver, Constant(0), [constraints...])
 satisfy(solver::MathProgBase.AbstractMathProgSolver, constraints::Array{<:Constraint}=Constraint[]) =
-  Problem(:minimize, solver, Constant(0), solver, constraints)
+  Problem(:minimize, solver, Constant(0), constraints)
 satisfy(solver::MathProgBase.AbstractMathProgSolver, constraint::Constraint) = satisfy(solver, [constraint])
 
 # +(constraints, constraints) is defined in constraints.jl
