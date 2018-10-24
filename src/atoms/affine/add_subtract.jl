@@ -98,7 +98,7 @@ function curvature(x::AdditionAtom)
 end
 
 function evaluate(x::AdditionAtom)
-  return broadcast(+, map(evaluate, x.children))
+  return broadcast(+, map(evaluate, x.children)...)
 end
 
 function conic_form!(x::AdditionAtom, unique_conic_forms::UniqueConicForms=UniqueConicForms())
