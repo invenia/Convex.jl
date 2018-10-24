@@ -1,5 +1,6 @@
 using Convex
 using Test
+import Statistics.mean
 
 TOL = 1e-3
 
@@ -39,7 +40,7 @@ TOL = 1e-3
     solve!(p)
     o2 = p.optval
 	# x should be very close to mean(a)
-    @test o2 ≈ norm(a - mean(a)) atol=TOL
+    @test o2 ≈ norm(a .- mean(a)) atol=TOL
 
     @test o1 <= o2
   end

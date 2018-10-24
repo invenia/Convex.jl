@@ -13,17 +13,17 @@ tests_complex = ["test_complex.jl"]
 
 println("Running tests:")
 
-for curtest in tests
-    @info " Test: $(curtest)"
-    include(curtest)
-end
+#for curtest in tests
+#    @info " Test: $(curtest)"
+#    include(curtest)
+#end
 
-if can_solve_socp(solver)
-    for curtest in tests_socp
-        @info " Test: $(curtest)"
-        include(curtest)
-    end
-end
+#if can_solve_socp(solver)
+#    for curtest in tests_socp
+#        @info " Test: $(curtest)"
+#        include(curtest)
+#    end
+#end
 
 if can_solve_sdp(solver)
     for curtest in tests_sdp
