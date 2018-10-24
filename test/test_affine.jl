@@ -21,8 +21,8 @@ eye(n) = diagm(0 => ones(n))
     p = minimize(2.0 * x, [x >= 2, x <= 4])
     @test vexity(p) == AffineVexity()
     solve!(p)
-    @test p.optvalxi ≈ 4 atol=TOL
-    @test p.o(evaluate(2.0x))[1] ≈ 4 atol=TOL
+    @test p.optval ≈ 4 atol=TOL
+    @test (evaluate(2.0x))[1] ≈ 4 atol=TOL
 
     x = Variable(2)
     A = 1.5 * eye(2)

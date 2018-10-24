@@ -21,19 +21,19 @@ Solution(x::Array{T, 1}, y::Array{T, 1}, status::Symbol, optval::T) where {T} =
 
 mutable struct Problem
   head::Symbol
+  model::MathProgBase.AbstractConicModel
   objective::AbstractExpr
   constraints::Array{Constraint}
   status::Symbol
   optval::Float64OrNothing
-  model::MathProgBase.AbstractConicModel
   solution::Solution
 
-  function Problem(head::Symbol, objective::AbstractExpr,
-                   model::MathProgBase.AbstractConicModel, constraints::Array=Constraint[])
+  function Problem(head::Symbol, model::MathProgBase.AbstractConicModel, 
+                   objective::AbstractExpr, constraints::Array=Constraint[])
     if sign(objective)== Convex.ComplexSign()
       error("Objective can not be a complex expression")
     else
-      return new(head, objective, constraints, Symbol("not yet solved"), nothing, model)
+      return new(head, model, objective, constraints, Symbol("not yet solved"), nothing)
     end
   end
 end
@@ -45,10 +45,9 @@ end
 #end
 
 # constructor if solver is specified
-function Problem(head::Symbol, objective::AbstractExpr,
-                 solver::MathProgBase.AbstractMathProgSolver,
-                 constraints::Array=Constraint[])
-   Problem(head, objective, MathProgBase.ConicModel(solver), constraints)
+function Problem(head::Symbol, solver::MathProgBase.AbstractMathProgSolver,
+                 objective::AbstractExpr, constraints::Array=Constraint[])
+   Problem(head, MathProgBase.ConicModel(solver), objective, constraints)
 end
 
 # If the problem constructed is of the form Ax=b where A is m x n
@@ -196,34 +195,43 @@ function conic_problem(p::Problem)
   return c, A, b, cones, var_to_ranges, vartypes, constraints
 end
 
-Problem(head::Symbol, objective::AbstractExpr, solver::MathProgBase.AbstractMathProgSolver, constraints::Constraint...) =
-  Problem(head, objective, solver, [constraints...])
+Problem(head::Symbol, solver::MathProgBase.AbstractMathProgSolver, 
+        objective::AbstractExpr, constraints::Constraint...) =
+  Problem(head, solver, objective, [constraints...])
 
 # Allow users to simply type minimize
-minimize(objective::AbstractExpr, solver::MathProgBase.AbstractMathProgSolver, constraints::Constraint...) =
-  Problem(:minimize, objective, solver, collect(constraints))
-minimize(objective::AbstractExpr, solver::MathProgBase.AbstractMathProgSolver, constraints::Array{<:Constraint}=Constraint[]) =
-  Problem(:minimize, objective, solver, constraints)
-minimize(objective::Value, solver::MathProgBase.AbstractMathProgSolver, constraints::Constraint...) =
-  minimize(convert(AbstractExpr, objective), solver, collect(constraints))
-minimize(objective::Value, solver::MathProgBase.AbstractMathProgSolver, constraints::Array{<:Constraint}=Constraint[]) =
-  minimize(convert(AbstractExpr, objective), solver, constraints)
+minimize(solver::MathProgBase.AbstractMathProgSolver,
+         objective::AbstractExpr, constraints::Constraint...) =
+  Problem(:minimize, solver, objective, collect(constraints))
+minimize(solver::MathProgBase.AbstractMathProgSolver,
+         objective::AbstractExpr, constraints::Array{<:Constraint}=Constraint[]) =
+  Problem(:minimize, solver, objective, constraints)
+minimize(solver::MathProgBase.AbstractMathProgSolver,
+         objective::Value, constraints::Constraint...) =
+  minimize(solver, convert(AbstractExpr, objective), collect(constraints))
+minimize(solver::MathProgBase.AbstractMathProgSolver,
+         objective::Value, constraints::Array{<:Constraint}=Constraint[]) =
+  minimize(solver, convert(AbstractExpr, objective), constraints)
 
 # Allow users to simply type maximize
-maximize(objective::AbstractExpr, solver::MathProgBase.AbstractMathProgSolver, constraints::Constraint...) =
-  Problem(:maximize, objective, solver, collect(constraints))
-maximize(objective::AbstractExpr, solver::MathProgBase.AbstractMathProgSolver, constraints::Array{<:Constraint}=Constraint[]) =
-  Problem(:maximize, objective, solver, constraints)
-maximize(objective::Value, solver, constraints::Constraint...) =
-  maximize(convert(AbstractExpr, objective), solver, collect(constraints))
-maximize(objective::Value, solver::MathProgBase.AbstractMathProgSolver, constraints::Array{<:Constraint}=Constraint[]) = 
-  maximize(convert(AbstractExpr, solver, objective), constraints)
+maximize(solver::MathProgBase.AbstractMathProgSolver,
+         objective::AbstractExpr, constraints::Constraint...) =
+  Problem(:maximize, solver, objective, collect(constraints))
+maximize(solver::MathProgBase.AbstractMathProgSolver,
+         objective::AbstractExpr, constraints::Array{<:Constraint}=Constraint[]) =
+  Problem(:maximize, solver, objective,  constraints)
+maximize(solver::MathProgBase.AbstractMathProgSolver,
+         objective::Value, constraints::Constraint...) =
+  maximize(solver, convert(AbstractExpr, objective), collect(constraints))
+maximize(solver::MathProgBase.AbstractMathProgSolver,
+         objective::Value, constraints::Array{<:Constraint}=Constraint[]) =
+  maximize(solver, convert(AbstractExpr, objective), constraints)
 
 # Allow users to simply type satisfy (if there is no objective)
 satisfy(solver::MathProgBase.AbstractMathProgSolver, constraints::Constraint...) = 
-  Problem(:minimize, Constant(0), solver, [constraints...])
+  Problem(:minimize, solver, Constant(0), [constraints...])
 satisfy(solver::MathProgBase.AbstractMathProgSolver, constraints::Array{<:Constraint}=Constraint[]) =
-  Problem(:minimize, Constant(0), solver, constraints)
+  Problem(:minimize, solver, Constant(0), solver, constraints)
 satisfy(solver::MathProgBase.AbstractMathProgSolver, constraint::Constraint) = satisfy(solver, [constraint])
 
 # +(constraints, constraints) is defined in constraints.jl
