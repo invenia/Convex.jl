@@ -8,13 +8,13 @@ TOL = 1e-2
 @testset "SDP Atoms" begin
   @testset "sdp variables" begin
     y = Variable((2,2), :Semidefinite)
-    p = minimize(y[1,1])
+    p = minimize(solver, y[1,1])
     # @fact vexity(p) --> ConvexVexity()
     solve!(p)
     @test p.optval ≈ 0 atol=TOL
 
     y = Variable((3,3), :Semidefinite)
-    p = minimize(y[1,1], y[2,2]==1)
+    p = minimize(solver, y[1,1], y[2,2]==1)
     # @fact vexity(p) --> ConvexVexity()
     solve!(p)
     @test p.optval ≈ 0 atol=TOL
@@ -23,26 +23,26 @@ TOL = 1e-2
     # This test fails on Mosek. See
     # https://github.com/JuliaOpt/Mosek.jl/issues/29
     # y = Variable((2, 2), :Semidefinite)
-    # p = minimize(y[1, 1], y[1, 2] == 1)
+    # p = minimize(solver, y[1, 1], y[1, 2] == 1)
     # # @fact vexity(p) --> ConvexVexity()
     # solve!(p)
     # @fact p.optval --> roughly(0, TOL)
 
     y = Semidefinite(3)
-    p = minimize(sum(diag(y)), y[1, 1] == 1)
+    p = minimize(solver, sum(diag(y)), y[1, 1] == 1)
     # @fact vexity(p) --> ConvexVexity()
     solve!(p)
     @test p.optval ≈ 1 atol=TOL
 
     y = Variable((3, 3), :Semidefinite)
-    p = minimize(trace(y), y[2,1]<=4, y[2,2]>=3)
+    p = minimize(solver, trace(y), y[2,1]<=4, y[2,2]>=3)
     # @fact vexity(p) --> ConvexVexity()
     solve!(p)
     @test p.optval ≈ 3 atol=TOL
 
     x = Variable(Positive())
     y = Semidefinite(3)
-    p = minimize(y[1, 2], y[2, 1] == 1)
+    p = minimize(solver, y[1, 2], y[2, 1] == 1)
     # @fact vexity(p) --> ConvexVexity()
     solve!(p)
     @test p.optval ≈ 1 atol=TOL
@@ -52,7 +52,7 @@ TOL = 1e-2
     # This test fails on Mosek
     x = Variable(Positive())
     y = Variable((3, 3))
-    p = minimize(x + y[1, 1], isposdef(y), x >= 1, y[2, 1] == 1)
+    p = minimize(solver, x + y[1, 1], isposdef(y), x >= 1, y[2, 1] == 1)
     # @fact vexity(p) --> ConvexVexity()
     solve!(p)
     @test p.optval ≈ 1 atol=TOL
@@ -60,7 +60,7 @@ TOL = 1e-2
 
   @testset "nuclear norm atom" begin
     y = Semidefinite(3)
-    p = minimize(nuclearnorm(y), y[2,1]<=4, y[2,2]>=3, y[3,3]<=2)
+    p = minimize(solver, nuclearnorm(y), y[2,1]<=4, y[2,2]>=3, y[3,3]<=2)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 3 atol=TOL
@@ -69,7 +69,7 @@ TOL = 1e-2
 
   @testset "operator norm atom" begin
     y = Variable((3,3))
-    p = minimize(operatornorm(y), y[2,1]<=4, y[2,2]>=3, sum(y)>=12)
+    p = minimize(solver, operatornorm(y), y[2,1]<=4, y[2,2]>=3, sum(y)>=12)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 4 atol=TOL
@@ -78,7 +78,7 @@ TOL = 1e-2
 
   @testset "sigma max atom" begin
     y = Variable((3,3))
-    p = minimize(sigmamax(y), y[2,1]<=4, y[2,2]>=3, sum(y)>=12)
+    p = minimize(solver, sigmamax(y), y[2,1]<=4, y[2,2]>=3, sum(y)>=12)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 4 atol=TOL
@@ -87,7 +87,7 @@ TOL = 1e-2
 
   @testset "lambda max atom" begin
     y = Semidefinite(3)
-    p = minimize(lambdamax(y), y[1,1]>=4)
+    p = minimize(solver, lambdamax(y), y[1,1]>=4)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 4 atol=TOL
@@ -96,7 +96,7 @@ TOL = 1e-2
 
   @testset "lambda min atom" begin
     y = Semidefinite(3)
-    p = maximize(lambdamin(y), trace(y)<=6)
+    p = maximize(solver, lambdamin(y), trace(y)<=6)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 2 atol=TOL
@@ -106,7 +106,7 @@ TOL = 1e-2
   @testset "matrix frac atom" begin
     x = [1, 2, 3]
     P = Variable(3, 3)
-    p = minimize(matrixfrac(x, P), P <= 2*eye(3), P >= 0.5 * eye(3))
+    p = minimize(solver, matrixfrac(x, P), P <= 2*eye(3), P >= 0.5 * eye(3))
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 7 atol=TOL
@@ -116,7 +116,7 @@ TOL = 1e-2
   @testset "matrix frac atom both arguments variable" begin
     x = Variable(3)
     P = Variable(3, 3)
-    p = minimize(matrixfrac(x, P), lambdamax(P) <= 2, x[1] >= 1)
+    p = minimize(solver, matrixfrac(x, P), lambdamax(P) <= 2, x[1] >= 1)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 0.5 atol=TOL
@@ -125,32 +125,32 @@ TOL = 1e-2
 
   @testset "sum largest eigs" begin
     x = Semidefinite(3)
-    p = minimize(sumlargesteigs(x, 2), x >= 1)
+    p = minimize(solver, sumlargesteigs(x, 2), x >= 1)
     solve!(p)
     @test p.optval ≈ 3 atol=TOL
     @test evaluate(x) ≈ ones(3, 3) atol=TOL
 
     x = Semidefinite(3)
-    p = minimize(sumlargesteigs(x, 2), [x[i,:] >= i for i=1:3]...)
+    p = minimize(solver, sumlargesteigs(x, 2), [x[i,:] >= i for i=1:3]...)
     solve!(p)
     @test p.optval ≈ 8.4853 atol=TOL
 
     x1 = Semidefinite(3)
-    p1 = minimize(lambdamax(x1), x1[1,1]>=4)
+    p1 = minimize(solver, lambdamax(x1), x1[1,1]>=4)
     solve!(p1)
 
     x2 = Semidefinite(3)
-    p2 = minimize(sumlargesteigs(x2, 1), x2[1,1]>=4)
+    p2 = minimize(solver, sumlargesteigs(x2, 1), x2[1,1]>=4)
     solve!(p2)
 
     @test p1.optval ≈ p2.optval atol=TOL
 
     x1 = Semidefinite(3)
-    p1 = minimize(lambdamax(x1), [x1[i,:] >= i for i=1:3]...)
+    p1 = minimize(solver, lambdamax(x1), [x1[i,:] >= i for i=1:3]...)
     solve!(p1)
 
     x2 = Semidefinite(3)
-    p2 = minimize(sumlargesteigs(x2, 1), [x2[i,:] >= i for i=1:3]...)
+    p2 = minimize(solver, sumlargesteigs(x2, 1), [x2[i,:] >= i for i=1:3]...)
     solve!(p2)
 
     @test p1.optval ≈ p2.optval atol=TOL
@@ -162,7 +162,7 @@ TOL = 1e-2
     id = eye(4)
     X = Semidefinite(4)
     W = kron(id, X)
-    p = maximize(trace(W), trace(X) ≤ 1)
+    p = maximize(solver, trace(W), trace(X) ≤ 1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 4 atol=TOL

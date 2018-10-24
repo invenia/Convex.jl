@@ -122,12 +122,13 @@ function fix!(x::Variable)
   x.vexity = ConstVexity()
   x
 end
-function fix!(x::Variable, v)
-  # TODO: check sizes match
+function fix!(x::Variable, v::AbstractArray)
+  size(x) == size(y) || throw(DimensionMismatch("Variable and value sizes do not match!"))
   x.value = Array{Float64}(undef, size(x))
-  x.value[:] = v
+  x.value[:,:] = v
   fix!(x)
 end
+fix!(x::Variable, v::Number) = fix!(x, fill(v, (1, 1)))
 
 function free!(x::Variable)
   # TODO this won't work if :fixed appears other than at the end of x.sets

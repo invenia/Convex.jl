@@ -9,7 +9,7 @@ TOL = 1e-3
 	x = Variable()
 	y = Variable()
 
-	p = minimize(x+y, x>=0, y>=0)
+	p = minimize(solver, x+y, x>=0, y>=0)
 	solve!(p)
 	@test p.optval ≈ 0 atol=TOL
 
@@ -29,7 +29,7 @@ TOL = 1e-3
     gamma = Variable(Positive())
     fix!(gamma, 0.7)
 
-    p = minimize(norm(x-a) + gamma*norm(x[1:end-1] - x[2:end]))
+    p = minimize(solver, norm(x-a) + gamma*norm(x[1:end-1] - x[2:end]))
     solve!(p)
     o1 = p.optval
 	# x should be very close to a

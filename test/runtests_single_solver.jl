@@ -18,19 +18,19 @@ for curtest in tests
     include(curtest)
 end
 
-#if can_solve_socp(solver)
-#    for curtest in tests_socp
-#        @info " Test: $(curtest)"
-#        include(curtest)
-#    end
-#end
+if can_solve_socp(solver)
+    for curtest in tests_socp
+        @info " Test: $(curtest)"
+        include(curtest)
+    end
+end
 
-#if can_solve_sdp(solver)
-#    for curtest in tests_sdp
-#        @info " Test: $(curtest)"
-#        include(curtest)
-#    end
-#end
+if can_solve_sdp(solver)
+    for curtest in tests_sdp
+        @info " Test: $(curtest)"
+        include(curtest)
+    end
+end
 
 #if can_solve_exp(solver)
 #    for curtest in tests_exp
