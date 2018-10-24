@@ -40,9 +40,9 @@ TOL = 1e-3
     #x2 = xr.value + im*xi.value
     real_diff = real(x1) - xr.value
 
-    @test isapprox(real_diff, zeros(10, 1), atol=TOL)
+    @test real_diff ≈ zeros(10, 1) atol=TOL
     imag_diff = imag(x1) - xi.value
-    @test isapprox(imag_diff, zeros(10, 1), atol=TOL)
+    @test imag_diff ≈ zeros(10, 1) atol=TOL
     #@fact x1==x2 --> true
   end
 
@@ -54,12 +54,12 @@ TOL = 1e-3
     c1 = real(x)>=0
     p = minimize(objective,c1)
     solve!(p)
-    @test isapprox(p.optval, 0, atol=TOL)
-    @test isapprox(evaluate(objective), 0, atol=TOL)
+    @test p.optval ≈ 0 atol=TOL
+    @test evaluate(objective) ≈ 0 atol=TOL
     real_diff = real(x.value) - real(a)
     imag_diff = imag(x.value) - imag(a)
-    @test isapprox(real_diff, 0, atol=TOL)
-    @test isapprox(imag_diff, 0, atol=TOL)
+    @test real_diff ≈ 0 atol=TOL
+    @test imag_diff ≈ 0 atol=TOL
     end
 
     @testset "sumsquares atom" begin
@@ -69,12 +69,12 @@ TOL = 1e-3
     c1 = real(x)>=0
     p = minimize(objective,c1)
     solve!(p)
-    @test isapprox(p.optval, 0, atol=TOL)
-    @test isapprox(evaluate(objective), zeros(1, 1), atol=TOL)
+    @test p.optval ≈ 0 atol=TOL
+    @test evaluate(objective) ≈ zeros(1, 1) atol=TOL
     real_diff = real.(x.value) - real.(a)
     imag_diff = imag.(x.value) - imag.(a)
-    @test isapprox(real_diff, zeros(2, 1), atol=TOL)
-    @test isapprox(imag_diff, zeros(2, 1), atol=TOL)
+    @test real_diff ≈ zeros(2, 1) atol=TOL
+    @test imag_diff ≈ zeros(2, 1) atol=TOL
     end
 
     @testset "abs atom" begin
@@ -84,12 +84,12 @@ TOL = 1e-3
     c1 = real(x)>=0
     p = minimize(objective,c1)
     solve!(p)
-    @test isapprox(p.optval, 0, atol=TOL)
-    @test isapprox(evaluate(objective), zeros(1), atol=TOL)
+    @test p.optval ≈ 0 atol=TOL
+    @test evaluate(objective) ≈ zeros(1) atol=TOL
     real_diff = real(x.value) - real(a)
     imag_diff = imag(x.value) - imag(a)
-    @test isapprox(real_diff, zeros(1), atol=TOL)
-    @test isapprox(imag_diff, zeros(1), atol=TOL)
+    @test real_diff ≈ zeros(1) atol=TOL
+    @test imag_diff ≈ zeros(1) atol=TOL
     end
 
     @testset "Complex Semidefinite constraint" begin
@@ -107,7 +107,7 @@ TOL = 1e-3
 
     real_diff = real.(x.value) - real.(posA)
     imag_diff = imag.(x.value) - imag.(posA)
-    @test isapprox(real_diff, zeros(n, n), atol=TOL)
-    @test isapprox(imag_diff, zeros(n, n), atol=TOL)
+    @test real_diff ≈ zeros(n, n) atol=TOL
+    @test imag_diff ≈ zeros(n, n) atol=TOL
     end
 end

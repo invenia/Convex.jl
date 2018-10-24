@@ -5,17 +5,13 @@ tests = ["test_utilities.jl",
          "test_affine.jl",
          "test_lp.jl"]
 tests_socp = ["test_socp.jl","test_params.jl"]
-#tests_sdp = ["test_sdp.jl"]
-#tests_exp = ["test_exp.jl"]
-#tests_int = ["test_int.jl"]
-#tests_exp_and_sdp = ["test_exp_and_sdp.jl"]
-#tests_complex = ["test_complex.jl"]
+tests_sdp = ["test_sdp.jl"]
+tests_exp = ["test_exp.jl"]
+tests_int = ["test_int.jl"]
+tests_exp_and_sdp = ["test_exp_and_sdp.jl"]
+tests_complex = ["test_complex.jl"]
 
 println("Running tests:")
-
-# The following syntax can be used to solve it using other solvers
-# using Gurobi
-# set_default_solver(GurobiSolver())
 
 for curtest in tests
     @info " Test: $(curtest)"

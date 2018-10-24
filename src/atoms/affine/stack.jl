@@ -35,7 +35,7 @@ function curvature(x::HcatAtom)
 end
 
 function evaluate(x::HcatAtom)
-  return hcat([evaluate(c) for c in x.children]...)
+  return hcat(map(evaluate, x.children)...)
 end
 
 
@@ -111,19 +111,19 @@ function conic_form!(x::HcatAtom, unique_conic_forms::UniqueConicForms=UniqueCon
 end
 
 hcat(args::AbstractExpr...) = HcatAtom(args...)
-hcat(args::AbstractExprOrValue...) = HcatAtom([convert(AbstractExpr, arg) for arg in args]...)
+hcat(args::AbstractExprOrValue...) = HcatAtom(map(arg -> convert(AbstractExpr, arg), args)...)
 hcat(args::Value...) = Base.cat(args..., dims=2)
 
 
 # TODO: implement vertical concatenation in a more efficient way
-vcat(args::AbstractExpr...) = transpose(HcatAtom([transpose(arg) for arg in args]...))
-vcat(args::AbstractExprOrValue...) = transpose(HcatAtom([transpose(convert(AbstractExpr, arg)) for arg in args]...))
+vcat(args::AbstractExpr...) = transpose(HcatAtom(map(transpose, args)...))
+vcat(args::AbstractExprOrValue...) = transpose(HcatAtom(map(arg -> transpose(convert(AbstractExpr, arg)), args)...))
 vcat(args::Value...) = Base.cat(args..., dims=1) # Note: this makes general vcat slower for anyone using Convex...
 
 
-Base.vect(args::T...) where {T<:AbstractExpr} = transpose(HcatAtom([transpose(arg) for arg in args]...))
-Base.vect(args::AbstractExpr...) = transpose(HcatAtom([transpose(arg) for arg in args]...))
-Base.vect(args::AbstractExprOrValue...) = transpose(HcatAtom([transpose(convert(AbstractExpr,arg)) for arg in args]...))
+Base.vect(args::T...) where {T<:AbstractExpr} = transpose(HcatAtom(map(transpose, args)...))
+Base.vect(args::AbstractExpr...) = transpose(HcatAtom(map(transpose, args)...))
+Base.vect(args::AbstractExprOrValue...) = transpose(HcatAtom(map(arg -> transpose(convert(AbstractExpr, arg)), args)...))
 #if Base._oldstyle_array_vcat_
 #  Base.vect(args::Value...) = Base.vcat(args...)
 #  # This is ugly, because the method redefines simple cases like [1,2,3]

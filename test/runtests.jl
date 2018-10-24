@@ -1,5 +1,8 @@
 using Convex
 using Test
+using ECOS
+using SCS
+using GLPKMathProgInterface
 
 function isinstalled(pkg)
     for path in Base.DEPOT_PATH
@@ -14,15 +17,9 @@ end
 
 solvers = Any[]
 
-if isinstalled("ECOS")
-    using ECOS
-    push!(solvers, ECOSSolver(verbose=0))
-end
-
-if isinstalled("SCS")
-    using SCS
-    push!(solvers, SCSSolver(verbose=0, eps=1e-5))
-end
+push!(solvers, ECOSSolver(verbose=0))
+push!(solvers, SCSSolver(verbose=0, eps=1e-5))
+push!(solvers, GLPKSolverMIP())
 
 if isinstalled("Gurobi")
     using Gurobi
@@ -34,16 +31,8 @@ if isinstalled("Mosek")
     push!(solvers, MosekSolver(LOG=0))
 end
 
-if isinstalled("GLPK") && isinstalled("GLPKMathProgInterface")
-    using GLPKMathProgInterface
-    push!(solvers, GLPKSolverMIP())
-end
-
-
 for solver in solvers
     println("Running tests with $(solver):")
-    set_default_solver(solver)
-    println(get_default_solver())
     include("runtests_single_solver.jl")
 end
 

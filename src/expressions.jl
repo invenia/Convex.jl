@@ -28,11 +28,11 @@
 #
 #############################################################################
 
-import Base.sign, Base.size, Base.length, Base.ndims, Base.convert
+import Base.sign, Base.size, Base.length, Base.lastindex, Base.ndims, Base.convert
 export AbstractExpr, Constraint
 export vexity, sign, size, evaluate, monotonicity, curvature, length, convert
 export conic_form!
-export endof, ndims
+export lastindex, ndims
 export Value, ValueOrNothing
 export get_vectorized_size
 
@@ -118,4 +118,4 @@ end
 
 ndims(x::AbstractExpr) = 2
 get_vectorized_size(x::AbstractExpr) = reduce(*, size(x))
-endof(x::AbstractExpr) = get_vectorized_size(x)
+lastindex(x::AbstractExpr) = get_vectorized_size(x)

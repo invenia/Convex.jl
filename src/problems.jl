@@ -195,31 +195,31 @@ Problem(head::Symbol, objective::AbstractExpr, constraints::Constraint...) =
 # Allow users to simply type minimize
 minimize(objective::AbstractExpr, constraints::Constraint...) =
   Problem(:minimize, objective, collect(constraints))
-minimize(objective::AbstractExpr, constraints::Array{T}=Constraint[]) where {T<:Constraint} =
+minimize(objective::AbstractExpr, constraints::Array{<:Constraint}=Constraint[]) =
   Problem(:minimize, objective, constraints)
 minimize(objective::Value, constraints::Constraint...) =
   minimize(convert(AbstractExpr, objective), collect(constraints))
-minimize(objective::Value, constraints::Array{T}=Constraint[]) where {T<:Constraint} =
+minimize(objective::Value, constraints::Array{<:Constraint}=Constraint[]) =
   minimize(convert(AbstractExpr, objective), constraints)
 
 # Allow users to simply type maximize
 maximize(objective::AbstractExpr, constraints::Constraint...) =
   Problem(:maximize, objective, collect(constraints))
-maximize(objective::AbstractExpr, constraints::Array{T}=Constraint[]) where {T<:Constraint} =
+maximize(objective::AbstractExpr, constraints::Array{<:Constraint}=Constraint[]) =
   Problem(:maximize, objective, constraints)
 maximize(objective::Value, constraints::Constraint...) =
   maximize(convert(AbstractExpr, objective), collect(constraints))
-maximize(objective::Value, constraints::Array{T}=Constraint[]) where {T<:Constraint} = 
+maximize(objective::Value, constraints::Array{<:Constraint}=Constraint[]) = 
   maximize(convert(AbstractExpr, objective), constraints)
 
 # Allow users to simply type satisfy (if there is no objective)
 satisfy(constraints::Constraint...) = Problem(:minimize, Constant(0), [constraints...])
-satisfy(constraints::Array{T}=Constraint[]) where {T<:Constraint} =
+satisfy(constraints::Array{<:Constraint}=Constraint[]) =
   Problem(:minimize, Constant(0), constraints)
 satisfy(constraint::Constraint) = satisfy([constraint])
 
 # +(constraints, constraints) is defined in constraints.jl
-add_constraints!(p::Problem, constraints::Array{T}) where {T<:Constraint} = 
+add_constraints!(p::Problem, constraints::Array{<:Constraint}) = 
   +(p.constraints, constraints)
 add_constraints!(p::Problem, constraint::Constraint) = add_constraints!(p, [constraint])
 add_constraint! = add_constraints!
