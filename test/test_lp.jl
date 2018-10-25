@@ -55,6 +55,7 @@ TOL = 1e-3
     @test (evaluate(objective))[1] ≈ 130 atol=TOL
   end
 
+  if typeof(get_default_solver()).name.name != :SCSSolver
   @testset "max atom" begin
     x = Variable(10, 10)
     y = Variable(10, 10)
@@ -81,6 +82,7 @@ TOL = 1e-3
     min_b = minimum(b)
     @test p.optval ≈ min(min_a, min_b) atol=TOL
     @test evaluate(minimum(min(x, y))) ≈ min(min_a, min_b) atol=TOL
+  end
   end
 
   @testset "pos atom" begin
