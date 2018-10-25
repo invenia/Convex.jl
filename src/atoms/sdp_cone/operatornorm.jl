@@ -36,7 +36,7 @@ end
 
 # in julia, `norm` on matrices is the operator norm
 function evaluate(x::OperatorNormAtom)
-  norm(evaluate(x.children[1]), 2)
+  opnorm(evaluate(x.children[1]), 2)
 end
 
 operatornorm(x::AbstractExpr) = OperatorNormAtom(x)
