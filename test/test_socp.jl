@@ -10,7 +10,7 @@ TOL = 1e-3
     x = Variable(2, 1)
     A = [1 2; 2 1; 3 4]
     b = [2; 3; 4]
-    p = minimize(solver, norm2(A * x + b))
+    p = minimize(norm2(A * x + b))
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 0.64888 atol=TOL
@@ -20,7 +20,7 @@ TOL = 1e-3
     A = [1 2; 2 1; 3 4]
     b = [2; 3; 4]
     lambda = 1
-    p = minimize(solver, norm2(A * x + b) + lambda * norm2(x), x >= 1)
+    p = minimize(norm2(A * x + b) + lambda * norm2(x), x >= 1)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 14.9049 atol=TOL
@@ -28,7 +28,7 @@ TOL = 1e-3
 
     x = Variable(2)
 
-    p = minimize(solver, norm2([x[1] + 2x[2] + 2; 2x[1] + x[2] + 3; 3x[1]+4x[2] + 4]) + lambda * norm2(x), x >= 1)
+    p = minimize(norm2([x[1] + 2x[2] + 2; 2x[1] + x[2] + 3; 3x[1]+4x[2] + 4]) + lambda * norm2(x), x >= 1)
     @test vexity(p) == ConvexVexity()
 
     solve!(p)
@@ -39,7 +39,7 @@ TOL = 1e-3
     A = [1 2; 2 1; 3 4]
     b = [2; 3; 4]
     lambda = 1
-    p = minimize(solver, norm2(A * x + b) + lambda * norm_1(x), x >= 1)
+    p = minimize(norm2(A * x + b) + lambda * norm_1(x), x >= 1)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 15.4907 atol=TOL
@@ -49,7 +49,7 @@ TOL = 1e-3
   @testset "frobenius norm atom" begin
     m = Variable(4, 5)
     c = [m[3, 3] == 4, m >= 1]
-    p = minimize(solver, vecnorm(m, 2), c)
+    p = minimize(vecnorm(m, 2), c)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ sqrt(35) atol=TOL
@@ -62,7 +62,7 @@ TOL = 1e-3
     b = [-3; 9; 5]
     c = [3 2 4]
     d = -3
-    p = minimize(solver, quadoverlin(A*x + b, c*x + d))
+    p = minimize(quadoverlin(A*x + b, c*x + d))
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 17.7831 atol=TOL
@@ -73,7 +73,7 @@ TOL = 1e-3
     x = Variable(2, 1)
     A = [1 2; 2 1; 3 4]
     b = [2; 3; 4]
-    p = minimize(solver, sumsquares(A*x + b))
+    p = minimize(sumsquares(A*x + b))
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 0.42105 atol=TOL
@@ -84,7 +84,7 @@ TOL = 1e-3
     x = Variable(2, 1)
     A = [1 2; 2 1; 3 4]
     b = [2; 3; 4]
-    p = minimize(solver, sum(square(A*x + b)))
+    p = minimize(sum(square(A*x + b)))
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 0.42105 atol=TOL
@@ -94,13 +94,13 @@ TOL = 1e-3
     A = [1 2; 2 1; 3 4]
     b = [2; 3; 4]
     expr = A * x + b
-    p = minimize(solver, sum(dot(^)(expr,2))) # elementwise ^
+    p = minimize(sum(dot(^)(expr,2))) # elementwise ^
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 0.42105 atol=TOL
     @test evaluate(sum(broadcast(^, expr, 2))) ≈ 0.42105 atol=TOL
 
-    p = minimize(solver, sum(dot(*)(expr, expr))) # elementwise *
+    p = minimize(sum(dot(*)(expr, expr))) # elementwise *
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 0.42105 atol=TOL
@@ -109,21 +109,21 @@ TOL = 1e-3
 
   @testset "inv pos atom" begin
     x = Variable(4)
-    p = minimize(solver, sum(invpos(x)), invpos(x) < 2, x > 1, x == 2, 2 == x)
+    p = minimize(sum(invpos(x)), invpos(x) < 2, x > 1, x == 2, 2 == x)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 2 atol=TOL
     @test evaluate(sum(invpos(x))) ≈ 2 atol=TOL
 
     x = Variable(3)
-    p = minimize(solver, sum(dot(/)([3,6,9], x)), x<=3)
+    p = minimize(sum(dot(/)([3,6,9], x)), x<=3)
     solve!(p)
     @test x.value ≈ fill(3.0, (3, 1)) atol=TOL
     @test p.optval ≈ 6 atol=TOL
     @test evaluate(sum((dot(/))([3, 6, 9], x))) ≈ 6 atol=TOL
 
     x = Variable()
-    p = minimize(solver, sum([3,6,9]/x), x<=3)
+    p = minimize(sum([3,6,9]/x), x<=3)
     solve!(p)
     @test x.value ≈ 3 atol=TOL
     @test p.optval ≈ 6 atol=TOL
@@ -133,14 +133,14 @@ TOL = 1e-3
   @testset "geo mean atom" begin
     x = Variable(2)
     y = Variable(2)
-    p = minimize(solver, geomean(x, y), x >= 1, y >= 2)
+    p = minimize(geomean(x, y), x >= 1, y >= 2)
     # not DCP compliant
     @test vexity(p) == ConcaveVexity()
-    p = maximize(solver, geomean(x, y), 1 < x, x < 2, y < 2)
+    p = maximize(geomean(x, y), 1 < x, x < 2, y < 2)
     # Just gave it a vector as an objective, not okay
     @test_throws Exception solve!(p)
 
-    p = maximize(solver, sum(geomean(x, y)), 1 < x, x < 2, y < 2)
+    p = maximize(sum(geomean(x, y)), 1 < x, x < 2, y < 2)
     solve!(p)
     @test p.optval ≈ 4 atol=TOL
     @test evaluate(sum(geomean(x, y))) ≈ 4 atol=TOL
@@ -148,13 +148,13 @@ TOL = 1e-3
 
   @testset "sqrt atom" begin
     x = Variable()
-    p = maximize(solver, sqrt(x), 1 >= x)
+    p = maximize(sqrt(x), 1 >= x)
   end
 
   @testset "quad form atom" begin
     x = Variable(3, 1)
     A = [0.8608 0.3131 0.5458; 0.3131 0.8584 0.5836; 0.5458 0.5836 1.5422]
-    p = minimize(solver, quadform(x, A), [x >= 1])
+    p = minimize(quadform(x, A), [x >= 1])
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 6.1464 atol=TOL
@@ -163,7 +163,7 @@ TOL = 1e-3
     x = Variable(3, 1)
     A = -1.0*[0.8608 0.3131 0.5458; 0.3131 0.8584 0.5836; 0.5458 0.5836 1.5422]
     c = [3 2 4]
-    p = maximize(solver, c*x , [quadform(x, A) >= -1])
+    p = maximize(c*x , [quadform(x, A) >= -1])
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 3.7713 atol=TOL
@@ -172,7 +172,7 @@ TOL = 1e-3
 
   @testset "huber atom" begin
     x = Variable(3)
-    p = minimize(solver, sum(huber(x, 1)), x >= 2)
+    p = minimize(sum(huber(x, 1)), x >= 2)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 9 atol=TOL
@@ -183,7 +183,7 @@ TOL = 1e-3
     A = [1 2 3; -1 2 3]
     b = A * ones(3)
     x = Variable(3)
-    p = minimize(solver, norm(x, 4.5), [A * x == b])
+    p = minimize(norm(x, 4.5), [A * x == b])
     @test vexity(p) == ConvexVexity()
     # Solution is approximately x = [1, .93138, 1.04575]
     solve!(p)
@@ -196,7 +196,7 @@ TOL = 1e-3
     x = Variable(5)
     q = 1.379;  # q norm constraint that generates many inequalities
     qs = q / (q - 1);  # Conjugate to q
-    p = minimize(solver, x' * v)
+    p = minimize(x' * v)
     p.constraints += (norm(x, q) <= 1)
     @test vexity(p) == ConvexVexity()
     solve!(p)  # Solution is -norm(v, q / (q - 1))
@@ -213,7 +213,7 @@ TOL = 1e-3
     b = [-1.82041, -1.67516, -0.866884]
     q = 1.5
     xvar = Variable(2)
-    p = minimize(solver, .5 * sumsquares(xvar) + norm(A * xvar - b, q))
+    p = minimize(.5 * sumsquares(xvar) + norm(A * xvar - b, q))
     @test vexity(p) == ConvexVexity()
     solve!(p)
     # Compute gradient, check it is zero(ish)

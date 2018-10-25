@@ -31,9 +31,9 @@ if isinstalled("Mosek")
     push!(solvers, MosekSolver(LOG=0))
 end
 
-for slv in solvers
-    global solver = slv
-    println("Running tests with $(solver):")
-    include("runtests_single_solver.jl")
+for solver in solvers                                                                        
+    println("Running tests with $(solver):")                                                 
+    set_default_solver(solver)                                                               
+    println(get_default_solver())                                                            
+    include("runtests_single_solver.jl")                                                     
 end
-

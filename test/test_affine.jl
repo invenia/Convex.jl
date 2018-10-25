@@ -9,7 +9,7 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "negate atom" begin
     x = Variable()
-    p = minimize(solver, -x, [x <= 0])
+    p = minimize(-x, [x <= 0])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 0 atol=TOL
@@ -18,7 +18,7 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "multiply atom" begin
     x = Variable(1)
-    p = minimize(solver, 2.0 * x, [x >= 2, x <= 4])
+    p = minimize(2.0 * x, [x >= 2, x <= 4])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 4 atol=TOL
@@ -26,7 +26,7 @@ eye(n) = diagm(0 => ones(n))
 
     x = Variable(2)
     A = 1.5 * eye(2)
-    p = minimize(solver, [2 2] * x, [A * x >= [1.1; 1.1]])
+    p = minimize([2 2] * x, [A * x >= [1.1; 1.1]])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 2.93333 atol=TOL
@@ -39,12 +39,12 @@ eye(n) = diagm(0 => ones(n))
     k = -y * [1.0, 2.0, 3.0]
     c = [y <= 3.0, y >= 0.0, x >= ones(3), k <= x, x <= z]
     o = 3 * y
-    p = Problem(:minimize, solver, o, c)
+    p = Problem(:minimize, o, c)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 3 atol=TOL
 
-    p = Problem(:minimize, solver, o, c...)
+    p = Problem(:minimize, o, c...)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 3 atol=TOL
@@ -52,7 +52,7 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "dot atom" begin
     x = Variable(2)
-    p = minimize(solver, dot([2.0; 2.0], x), x >= [1.1; 1.1])
+    p = minimize(dot([2.0; 2.0], x), x >= [1.1; 1.1])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 4.4 atol=TOL
@@ -61,7 +61,7 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "vecdot atom" begin
     x = Variable(2,2)
-    p = minimize(solver, vecdot(fill(2.0, (2,2)), x), x >= 1.1)
+    p = minimize(vecdot(fill(2.0, (2,2)), x), x >= 1.1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 8.8 atol=TOL
@@ -71,21 +71,21 @@ eye(n) = diagm(0 => ones(n))
   @testset "add atom" begin
     x = Variable(1)
     y = Variable(1)
-    p = minimize(solver, x + y, [x >= 3, y >= 2])
+    p = minimize(x + y, [x >= 3, y >= 2])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 5 atol=TOL
     @test evaluate(x + y) ≈ 5 atol=TOL
 
     x = Variable(1)
-    p = minimize(solver, x, [eye(2) + x >= eye(2)])
+    p = minimize(x, [eye(2) + x >= eye(2)])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 0 atol=TOL
     @test evaluate(eye(2) + x) ≈ eye(2) atol=TOL
 
     y = Variable()
-    p = minimize(solver, y - 5, y >= -1)
+    p = minimize(y - 5, y >= -1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ -6 atol=TOL
@@ -95,7 +95,7 @@ eye(n) = diagm(0 => ones(n))
   @testset "transpose atom" begin
     x = Variable(2)
     c = ones(2, 1)
-    p = minimize(solver, x' * c, x >= 1)
+    p = minimize(x' * c, x >= 1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 2 atol=TOL
@@ -103,7 +103,7 @@ eye(n) = diagm(0 => ones(n))
 
     X = Variable(2, 2)
     c = ones(2, 1)
-    p = minimize(solver, c' * X' * c, [X >= ones(2, 2)])
+    p = minimize(c' * X' * c, [X >= ones(2, 2)])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 4 atol=TOL
@@ -116,7 +116,7 @@ eye(n) = diagm(0 => ones(n))
     x = Variable(rows, cols)
     c = ones(1, cols)
     d = ones(rows, 1)
-    p = minimize(solver, c * x' * d + d' * x * c' + (c * x''''' * d)',
+    p = minimize(c * x' * d + d' * x * c' + (c * x''''' * d)',
                 [x' >= r_2, x >= r, x''' >= r_2, x'' >= r])
     @test vexity(p) == AffineVexity()
     solve!(p)
@@ -127,7 +127,7 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "index atom" begin
     x = Variable(2)
-    p = minimize(solver, x[1] + x[2], [x >= 1])
+    p = minimize(x[1] + x[2], [x >= 1])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 2 atol=TOL
@@ -135,7 +135,7 @@ eye(n) = diagm(0 => ones(n))
 
     x = Variable(3)
     I = [true true false]
-    p = minimize(solver, sum(x[I]), [x >= 1])
+    p = minimize(sum(x[I]), [x >= 1])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 2 atol=TOL
@@ -147,7 +147,7 @@ eye(n) = diagm(0 => ones(n))
     X = Variable(rows, cols)
     A = randn(rows, cols)
     c = rand(1, n)
-    p = minimize(solver, c * X[1:n, 5:5+n-1]' * c', X >= A)
+    p = minimize(c * X[1:n, 5:5+n-1]' * c', X >= A)
     @test vexity(p) == AffineVexity()
     solve!(p)
     s = c * A[1:n, 5:5+n-1]' * c'
@@ -157,14 +157,14 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "sum atom" begin
     x = Variable(2,2)
-    p = minimize(solver, sum(x), x>=1)
+    p = minimize(sum(x), x>=1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 4 atol=TOL
     @test evaluate(sum(x)) ≈ 4 atol=TOL
 
     x = Variable(2,2)
-    p = minimize(solver, sum(x) - 2*x[1,1], x>=1, x[1,1]<=2)
+    p = minimize(sum(x) - 2*x[1,1], x>=1, x[1,1]<=2)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 1 atol=TOL
@@ -172,7 +172,7 @@ eye(n) = diagm(0 => ones(n))
 
     x = Variable(10)
     a = rand(10, 1)
-    p = maximize(solver, sum(x[2:6]), x <= a)
+    p = maximize(sum(x[2:6]), x <= a)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ sum(a[2:6]) atol=TOL
@@ -181,14 +181,14 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "diag atom" begin
     x = Variable(2,2)
-    p = minimize(solver, sum(diag(x,1)), x >= 1)
+    p = minimize(sum(diag(x,1)), x >= 1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 1 atol=TOL
     @test evaluate(sum(diag(x, 1))) ≈ 1 atol=TOL
 
     x = Variable(4, 4)
-    p = minimize(solver, sum(diag(x)), x >= 2)
+    p = minimize(sum(diag(x)), x >= 2)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 8 atol=TOL
@@ -197,7 +197,7 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "trace atom" begin
     x = Variable(2,2)
-    p = minimize(solver, trace(x), x >= 1)
+    p = minimize(trace(x), x >= 1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 2 atol=TOL
@@ -206,42 +206,42 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "dot multiply atom" begin
     x = Variable(3)
-    p = maximize(solver, sum(dot(*)(x,[1,2,3])), x<=1)
+    p = maximize(sum(dot(*)(x,[1,2,3])), x<=1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 6 atol=TOL
     @test evaluate(sum((dot(*))(x, [1, 2, 3]))) ≈ 6 atol=TOL
 
     x = Variable(3, 3)
-    p = maximize(solver, sum(dot(*)(x,eye(3))), x<=1)
+    p = maximize(sum(dot(*)(x,eye(3))), x<=1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 3 atol=TOL
     @test evaluate(sum((dot(*))(x, eye(3)))) ≈ 3 atol=TOL
 
     x = Variable(5, 5)
-    p = minimize(solver, x[1, 1], dot(*)(3,x) >= 3)
+    p = minimize(x[1, 1], dot(*)(3,x) >= 3)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 1 atol=TOL
     @test (evaluate(x[1, 1]))[1] ≈ 1 atol=TOL
 
     x = Variable(3,1)
-    p = minimize(solver, sum(dot(*)(ones(3,3), x)), x>=1)
+    p = minimize(sum(dot(*)(ones(3,3), x)), x>=1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 9 atol=TOL
     @test (evaluate(x[1, 1]))[1] ≈ 1 atol=TOL
 
     x = Variable(1,3)
-    p = minimize(solver, sum(dot(*)(ones(3,3), x)), x>=1)
+    p = minimize(sum(dot(*)(ones(3,3), x)), x>=1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 9 atol=TOL
     @test (evaluate(x[1, 1]))[1] ≈ 1 atol=TOL
 
     x = Variable(1, 3, Positive())
-    p = maximize(solver, sum(dot(/)(x,[1 2 3])), x<=1)
+    p = maximize(sum(dot(/)(x,[1 2 3])), x<=1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 11 / 6 atol=TOL
@@ -252,14 +252,14 @@ eye(n) = diagm(0 => ones(n))
     A = rand(2, 3)
     X = Variable(3, 2)
     c = rand()
-    p = minimize(solver, sum(reshape(X, 2, 3) + A), X >= c)
+    p = minimize(sum(reshape(X, 2, 3) + A), X >= c)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ sum(A .+ c) atol=TOL
     @test evaluate(sum(reshape(X, 2, 3) + A)) ≈ sum(A .+ c) atol=TOL
 
     b = rand(6)
-    p = minimize(solver, sum(vec(X) + b), X >= c)
+    p = minimize(sum(vec(X) + b), X >= c)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ sum(b .+ c) atol=TOL
@@ -269,7 +269,7 @@ eye(n) = diagm(0 => ones(n))
     c = ones(16, 1)
     reshaped = reshape(x, 16, 1)
     a = collect(1:16)
-    p = minimize(solver, c' * reshaped, reshaped >= a)
+    p = minimize(c' * reshaped, reshaped >= a)
     @test vexity(p) == AffineVexity()
     solve!(p)
     # TODO: why is accuracy lower here?
@@ -280,7 +280,7 @@ eye(n) = diagm(0 => ones(n))
   @testset "hcat atom" begin
     x = Variable(4, 4)
     y = Variable(4, 6)
-    p = maximize(solver, sum(x) + sum([y fill(4.0, 4)]), [x y fill(2.0, (4, 2))] <= 2)
+    p = maximize(sum(x) + sum([y fill(4.0, 4)]), [x y fill(2.0, (4, 2))] <= 2)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 96 atol=TOL
@@ -294,7 +294,7 @@ eye(n) = diagm(0 => ones(n))
     y = Variable(4, 6)
 
 # TODO: fix dimension mismatch [y 4*eye(4); x -ones(4, 6)]
-    p = maximize(solver, sum(x) + sum([y 4*eye(4); x -ones(4, 6)]), [x;y'] <= 2)
+    p = maximize(sum(x) + sum([y 4*eye(4); x -ones(4, 6)]), [x;y'] <= 2)
     @test vexity(p) == AffineVexity()
     solve!(p)
     # TODO: why is accuracy lower here?
@@ -310,7 +310,7 @@ eye(n) = diagm(0 => ones(n))
     @test_throws ArgumentError Diagonal(x)
 
     x = Variable(4)
-    p = minimize(solver, sum(Diagonal(x)), x == [1, 2, 3, 4])
+    p = minimize(sum(Diagonal(x)), x == [1, 2, 3, 4])
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 10 atol=TOL
@@ -318,13 +318,13 @@ eye(n) = diagm(0 => ones(n))
 
     x = Variable(3)
     c = [1; 2; 3]
-    p = minimize(solver, c' * Diagonal(x) * c, x >= 1, sum(x) == 10)
+    p = minimize(c' * Diagonal(x) * c, x >= 1, sum(x) == 10)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 21 atol=TOL
 
     x = Variable(3)
-    p = minimize(solver, sum(x), x >= 1, Diagonal(x)[1, 2] == 1)
+    p = minimize(sum(x), x >= 1, Diagonal(x)[1, 2] == 1)
     @test solve!(p) === nothing
     @test p.status != :Optimal
   end
@@ -332,7 +332,7 @@ eye(n) = diagm(0 => ones(n))
   @testset "conv atom" begin
     x = Variable(3)
     h = [1, -1]
-    p = minimize(solver, sum(conv(h, x)) + sum(x), x >= 1, x <= 2)
+    p = minimize(sum(conv(h, x)) + sum(x), x >= 1, x <= 2)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 3 atol=TOL
@@ -340,7 +340,7 @@ eye(n) = diagm(0 => ones(n))
 
     x = Variable(3)
     h = [1, -1]
-    p = minimize(solver, sum(conv(x, h)) + sum(x), x >= 1, x <= 2)
+    p = minimize(sum(conv(x, h)) + sum(x), x >= 1, x <= 2)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 3 atol=TOL
@@ -350,17 +350,17 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "satisfy problems" begin
     x = Variable()
-    p = satisfy(solver, x >= 0)
+    p = satisfy(x >= 0)
     add_constraints!(p, x >= 1)
     add_constraints!(p, [x >= -1, x <= 4])
     solve!(p)
     @test p.status == :Optimal
 
-    p = satisfy(solver, [x >= 0, x >= 1, x <= 2])
+    p = satisfy([x >= 0, x >= 1, x <= 2])
     solve!(p)
     @test p.status == :Optimal
 
-    p = maximize(solver, 1, [x >= 1, x <= 2])
+    p = maximize(1, [x >= 1, x <= 2])
     solve!(p)
     @test p.status == :Optimal
 
@@ -369,14 +369,14 @@ eye(n) = diagm(0 => ones(n))
     constr += x <= 10
     constr2 = x >= 0
     constr2 += [x >= 2, x <= 3] + constr
-    p = satisfy(solver, constr)
+    p = satisfy(constr)
     solve!(p)
     @test p.status == :Optimal
   end
 
   @testset "dual" begin
     x = Variable()
-    p = minimize(solver, x, x >= 0)
+    p = minimize(x, x >= 0)
     solve!(p)
     if p.solution.has_dual
         println("Solution object has dual value, checking for dual correctness.")
@@ -384,7 +384,7 @@ eye(n) = diagm(0 => ones(n))
     end
 
     x = Variable()
-    p = maximize(solver, x, x <= 0)
+    p = maximize(x, x <= 0)
     solve!(p)
     if p.solution.has_dual
         println("Solution object has dual value, checking for dual correctness.")
@@ -392,7 +392,7 @@ eye(n) = diagm(0 => ones(n))
     end
 
     x = Variable()
-    p = minimize(solver, x, x >= 0, x == 2)
+    p = minimize(x, x >= 0, x == 2)
     solve!(p)
     if p.solution.has_dual
         println("Solution object has dual value, checking for dual correctness.")
@@ -402,7 +402,7 @@ eye(n) = diagm(0 => ones(n))
 
     x = Variable(2)
     A = 1.5 * eye(2)
-    p = minimize(solver, dot([2.0; 2.0], x), [A * x >= [1.1; 1.1]])
+    p = minimize(dot([2.0; 2.0], x), [A * x >= [1.1; 1.1]])
     solve!(p)
     if p.solution.has_dual
         println("Solution object has dual value, checking for dual correctness.")
