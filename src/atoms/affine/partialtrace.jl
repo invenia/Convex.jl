@@ -73,7 +73,7 @@ function evaluate(x::PartialTraceAtom)
             a = kron(a,sub_systems[i])
         end
     end
-    return trace(sub_systems[x.sys])*a
+    return tr(sub_systems[x.sys])*a
 end
 
 
