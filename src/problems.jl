@@ -28,12 +28,12 @@ mutable struct Problem
   model::MathProgBase.AbstractConicModel
   solution::Solution
 
-  function Problem(head::Symbol, model::MathProgBase.AbstractConicModel, 
-                   objective::AbstractExpr, constraints::Array=Constraint[])
+  function Problem(head::Symbol, objective::AbstractExpr,
+                   model::MathProgBase.AbstractConicModel, constraints::Array=Constraint[])
     if sign(objective)== Convex.ComplexSign()
       error("Objective can not be a complex expression")
     else
-      return new(head, model, objective, constraints, Symbol("not yet solved"), nothing)
+      return new(head, objective, constraints, Symbol("not yet solved"), nothing, model)
     end
   end
 end
