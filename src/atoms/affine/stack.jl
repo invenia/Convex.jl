@@ -1,5 +1,5 @@
-import Base.vcat, Base.hcat
-export vcat, hcat, HcatAtom
+import Base.vcat, Base.hcat, Base.hvcat
+export vcat, hcat, hvcat, HcatAtom
 export sign, curvature, monotonicity, evaluate, conic_form!
 
 struct HcatAtom <: AbstractExpr
