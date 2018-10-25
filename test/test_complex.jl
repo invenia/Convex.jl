@@ -1,5 +1,6 @@
 using Convex
 using Test
+import LinearAlgebra.eigen
 
 TOL = 1e-3
 
@@ -86,8 +87,8 @@ TOL = 1e-3
     solve!(p)
     @test p.optval ≈ 0 atol=TOL
     @test evaluate(objective) ≈ zeros(1) atol=TOL
-    real_diff = real(x.value) - real(a)
-    imag_diff = imag(x.value) - imag(a)
+    real_diff = real(x.value) .- real(a)
+    imag_diff = imag(x.value) .- imag(a)
     @test real_diff ≈ zeros(1) atol=TOL
     @test imag_diff ≈ zeros(1) atol=TOL
     end
@@ -102,7 +103,7 @@ TOL = 1e-3
     p = minimize(objective, c1)
     solve!(p)
     # test that X is approximately equal to posA:
-    l,v = eig(A)
+    l,v = eigen(A)
     posA = v*Diagonal(max.(l,0))*v'
 
     real_diff = real.(x.value) - real.(posA)

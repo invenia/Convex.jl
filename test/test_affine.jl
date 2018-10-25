@@ -289,7 +289,6 @@ eye(n) = diagm(0 => ones(n))
   end
 
   @testset "vcat atom" begin
-      @test_broken begin
     x = Variable(4, 4)
     y = Variable(4, 6)
 
@@ -301,8 +300,6 @@ eye(n) = diagm(0 => ones(n))
     @test p.optval ≈ 104 atol=10TOL
     @test evaluate(sum(x) + sum([y 4 * eye(4); x -(ones(4, 6))])) ≈ 104 atol=10TOL
     @test evaluate([x; y']) ≈ 2 * ones(10, 4) atol=TOL
-    end
-
   end
 
   @testset "Diagonal atom" begin

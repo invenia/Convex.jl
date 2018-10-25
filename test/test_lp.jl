@@ -126,7 +126,7 @@ TOL = 1e-3
     @test evaluate(sumsmallest(x, 4)) ≈ 1 atol=TOL
 
     x = Variable(3, 2)
-    p = maximize(sumsmallest(x, 3), x >= 1, x <= 5, sumlargest(x, 3) <= 12)
+    p = maximize(sumsmallest(x, 3), x >= 2, x <= 5, sumlargest(x, 3) <= 12)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 12 atol=TOL
