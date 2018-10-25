@@ -171,7 +171,7 @@ function conic_form!(x::DotMultiplyAtom, unique_conic_forms::UniqueConicForms=Un
       var = var*ones(1,size(coeff,1))
     end
 
-    const_multiplier = sparse(Diagonal(vec(coeff)))
+    const_multiplier = spdiagm(0 => vec(coeff))
     objective = const_multiplier * conic_form!(var, unique_conic_forms)
     cache_conic_form!(unique_conic_forms, x, objective)
   end

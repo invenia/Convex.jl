@@ -77,13 +77,13 @@ end
 
 function real_conic_form(x::Variable)
   vec_size = get_vectorized_size(x)
-  return sparse(Diagonal(ones(vec_size)))
+  return spdiagm(0 => ones(vec_size))
 end
 
 function imag_conic_form(x::Variable)
   vec_size = get_vectorized_size(x)
   if x.sign == ComplexSign()
-    return im*sparse(Diagonal(ones(vec_size)))
+    return im*spdiagm(0 => ones(vec_size))
   else
     return spzeros(vec_size, vec_size)
   end
