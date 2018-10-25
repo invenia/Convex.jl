@@ -1,5 +1,6 @@
 using Convex
 using Test
+using Random
 
 TOL = 1e-3
 
@@ -57,8 +58,8 @@ TOL = 1e-3
   @testset "max atom" begin
     x = Variable(10, 10)
     y = Variable(10, 10)
-    a = rand(10, 10)
-    b = rand(10, 10)
+    a = rand(MersenneTwister(61), 10, 10)
+    b = rand(MersenneTwister(62), 10, 10)
     p = minimize(maximum(max(x, y)), [x >= a, y >= b])
     @test vexity(p) == ConvexVexity()
     solve!(p)
@@ -71,8 +72,8 @@ TOL = 1e-3
   @testset "min atom" begin
     x = Variable(10, 10)
     y = Variable(10, 10)
-    a = rand(10, 10)
-    b = rand(10, 10)
+    a = rand(MersenneTwister(75), 10, 10)
+    b = rand(MersenneTwister(76), 10, 10)
     p = maximize(minimum(min(x, y)), [x <= a, y <= b])
     @test vexity(p) == ConvexVexity()
     solve!(p)
