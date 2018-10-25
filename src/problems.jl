@@ -21,11 +21,11 @@ Solution(x::Array{T, 1}, y::Array{T, 1}, status::Symbol, optval::T) where {T} =
 
 mutable struct Problem
   head::Symbol
-  model::MathProgBase.AbstractConicModel
   objective::AbstractExpr
   constraints::Array{Constraint}
   status::Symbol
   optval::Float64OrNothing
+  model::MathProgBase.AbstractConicModel
   solution::Solution
 
   function Problem(head::Symbol, model::MathProgBase.AbstractConicModel, 
