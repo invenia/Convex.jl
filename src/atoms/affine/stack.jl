@@ -120,16 +120,7 @@ vcat(args::AbstractExpr...) = transpose(HcatAtom(map(transpose, args)...))
 vcat(args::AbstractExprOrValue...) = transpose(HcatAtom(map(arg -> transpose(convert(AbstractExpr, arg)), args)...))
 vcat(args::Value...) = Base.cat(args..., dims=1) # Note: this makes general vcat slower for anyone using Convex...
 
-#function hvcat(rows::Tuple{Vararg{Int}}, args::T...) where {T<:AbstractExpr}
-#    nbr = length(rows)
-#    rs = Vector{Any}(undef, nbr)
-#    a = 1
-#    for i = 1:nbr
-#        rs[i] = hcat(args[a:a-1+rows[i]]...)
-#        a += rows[i]
-#    end
-#    return vcat(rs...)
-#end
+
 function hvcat(rows::Tuple{Vararg{Int}}, args::AbstractExprOrValue...)
     nbr = length(rows)
     rs = Vector{Any}(undef, nbr)
@@ -145,16 +136,7 @@ end
 Base.vect(args::T...) where {T<:AbstractExpr} = transpose(HcatAtom(map(transpose, args)...))
 Base.vect(args::AbstractExpr...) = transpose(HcatAtom(map(transpose, args)...))
 Base.vect(args::AbstractExprOrValue...) = transpose(HcatAtom(map(arg -> transpose(convert(AbstractExpr, arg)), args)...))
-#if Base._oldstyle_array_vcat_
-#  Base.vect(args::Value...) = Base.vcat(args...)
-#  # This is ugly, because the method redefines simple cases like [1,2,3]
-#        
-#else
-#    function Base.vect(args::Value...)
-#        T = Base.promote_typeof(args...)
-#        return copy!(Array{T}(length(args)), args)
-#    end
-#end
+
 function Base.vect(args::Value...)
     return collect(args)
 end
