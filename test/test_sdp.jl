@@ -38,7 +38,7 @@ eye(n) = diagm(0 => ones(n))
     @test p.optval ≈ 1 atol=TOL
 
     y = Variable((3, 3), :Semidefinite)
-    p = minimize(trace(y), y[2,1]<=4, y[2,2]>=3)
+    p = minimize(tr(y), y[2,1]<=4, y[2,2]>=3)
     # @fact vexity(p) --> ConvexVexity()
     solve!(p)
     @test p.optval ≈ 3 atol=TOL
@@ -99,7 +99,7 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "lambda min atom" begin
     y = Semidefinite(3)
-    p = maximize(lambdamin(y), trace(y)<=6)
+    p = maximize(lambdamin(y), tr(y)<=6)
     @test vexity(p) == ConvexVexity()
     solve!(p)
     @test p.optval ≈ 2 atol=TOL
@@ -165,7 +165,7 @@ eye(n) = diagm(0 => ones(n))
     id = eye(4)
     X = Semidefinite(4)
     W = kron(id, X)
-    p = maximize(trace(W), trace(X) ≤ 1)
+    p = maximize(tr(W), tr(X) ≤ 1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 4 atol=TOL

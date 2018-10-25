@@ -197,11 +197,11 @@ eye(n) = diagm(0 => ones(n))
 
   @testset "trace atom" begin
     x = Variable(2,2)
-    p = minimize(trace(x), x >= 1)
+    p = minimize(tr(x), x >= 1)
     @test vexity(p) == AffineVexity()
     solve!(p)
     @test p.optval ≈ 2 atol=TOL
-    @test evaluate(trace(x)) ≈ 2 atol=TOL
+    @test evaluate(tr(x)) ≈ 2 atol=TOL
   end
 
   @testset "dot multiply atom" begin
