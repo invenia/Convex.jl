@@ -1,7 +1,10 @@
 using Convex
 using Test
+import LinearAlgebra.diagm
 
 TOL = 1e-2
+eye(n) = diagm(0 => ones(n))
+
 
 # TODO: uncomment vexity checks once SDP on vars/constraints changes vexity of problem
 
