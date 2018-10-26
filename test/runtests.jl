@@ -19,7 +19,7 @@ solvers = Any[]
 
 push!(solvers, ECOSSolver(verbose=0))
 push!(solvers, GLPKSolverMIP())
-push!(solvers, SCSSolver(verbose=0, eps=1e-12))
+push!(solvers, SCSSolver(verbose=0, eps=1e-6))
 
 if isinstalled("Gurobi")
     using Gurobi
