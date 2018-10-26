@@ -24,7 +24,6 @@ TOL = 1e-3
 
   @testset "maximum atom" begin
     x = Variable(10)
-#   a = rand(10, 1)
     a = shuffle(collect(0.1:0.1:1.0))
     p = minimize(maximum(x), x >= a)
     @test vexity(p) == ConvexVexity()
@@ -35,7 +34,6 @@ TOL = 1e-3
 
   @testset "minimum atom" begin
     x = Variable(1)
-#   a = rand(10, 10)
     a = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
     p = maximize(minimum(x), x <= a)
     @test vexity(p) == ConvexVexity()
@@ -57,41 +55,33 @@ TOL = 1e-3
     @test (evaluate(objective))[1] ≈ 130 atol=TOL
   end
 
-  # skip the following two test sets for SCS solver
-  # as it fails for some set of random numbers
-# if typeof(get_default_solver()).name.name != :SCSSolver
-    @testset "max atom" begin
-      x = Variable(10, 10)
-      y = Variable(10, 10)
-#     a = rand(10, 10)
-      a = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
-#     b = rand(10, 10)
-      b = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
-      p = minimize(maximum(max(x, y)), [x >= a, y >= b])
-      @test vexity(p) == ConvexVexity()
-      solve!(p)
-      max_a = maximum(a)
-      max_b = maximum(b)
-      @test p.optval ≈ max(max_a, max_b) atol=TOL
-      @test evaluate(maximum(max(x, y))) ≈ max(max_a, max_b) atol=TOL
-    end
+  @testset "max atom" begin
+    x = Variable(10, 10)
+    y = Variable(10, 10)
+    a = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
+    b = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
+    p = minimize(maximum(max(x, y)), [x >= a, y >= b])
+    @test vexity(p) == ConvexVexity()
+    solve!(p)
+    max_a = maximum(a)
+    max_b = maximum(b)
+    @test p.optval ≈ max(max_a, max_b) atol=10TOL
+    @test evaluate(maximum(max(x, y))) ≈ max(max_a, max_b) atol=10TOL
+  end
 
-    @testset "min atom" begin
-      x = Variable(10, 10)
-      y = Variable(10, 10)
-#     a = rand(10, 10)
-      a = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
-#     b = rand(10, 10)
-      b = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
-      p = maximize(minimum(min(x, y)), [x <= a, y <= b])
-      @test vexity(p) == ConvexVexity()
-      solve!(p)
-      min_a = minimum(a)
-      min_b = minimum(b)
-      @test p.optval ≈ min(min_a, min_b) atol=TOL
-      @test evaluate(minimum(min(x, y))) ≈ min(min_a, min_b) atol=TOL
-    end
-# end
+  @testset "min atom" begin
+    x = Variable(10, 10)
+    y = Variable(10, 10)
+    a = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
+    b = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
+    p = maximize(minimum(min(x, y)), [x <= a, y <= b])
+    @test vexity(p) == ConvexVexity()
+    solve!(p)
+    min_a = minimum(a)
+    min_b = minimum(b)
+    @test p.optval ≈ min(min_a, min_b) atol=10TOL
+    @test evaluate(minimum(min(x, y))) ≈ min(min_a, min_b) atol=10TOL
+  end
 
   @testset "pos atom" begin
     x = Variable(3)
