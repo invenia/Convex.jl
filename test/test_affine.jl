@@ -1,9 +1,9 @@
 using Convex
 using Test
-import LinearAlgebra.diagm
+import LinearAlgebra.I
 
 TOL = 1e-3
-eye(n) = diagm(0 => ones(n))
+eye(n) = Matrix(1.0I, n, n)
 
 @testset "Affine Atoms" begin
 
@@ -407,8 +407,5 @@ eye(n) = diagm(0 => ones(n))
         @test all(abs.(p.constraints[1].dual - dual) .<= TOL)
     end
   end
-
-
-
 
 end

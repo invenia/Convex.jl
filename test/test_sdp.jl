@@ -1,9 +1,9 @@
 using Convex
 using Test
-import LinearAlgebra.diagm
+import LinearAlgebra.I
 
 TOL = 1e-2
-eye(n) = diagm(0 => ones(n))
+eye(n) = Matrix(1.0I, n, n)
 
 
 # TODO: uncomment vexity checks once SDP on vars/constraints changes vexity of problem

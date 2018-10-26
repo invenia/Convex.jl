@@ -6,7 +6,7 @@
 #############################################################################
 
 import Base.transpose, Base.adjoint
-export transpose, adjoint, ctranspose, TransposeAtom, CTransposeAtom
+export transpose, adjoint, TransposeAtom, AdjointAtom
 export sign, curvature, monotonicity, evaluate, conic_form!
 
 struct TransposeAtom <: AbstractExpr
@@ -72,37 +72,37 @@ transpose(x::AbstractExpr) = TransposeAtom(x)
 
 
 
-struct CTransposeAtom <: AbstractExpr
+struct AdjointAtom <: AbstractExpr
   head::Symbol
   id_hash::UInt64
   children::Tuple{AbstractExpr}
   size::Tuple{Int, Int}
 
-  function CTransposeAtom(x::AbstractExpr)
+  function AdjointAtom(x::AbstractExpr)
     children = (x,)
-    return new(:ctranspose, hash(children), children, (x.size[2], x.size[1]))
+    return new(:adjoint, hash(children), children, (x.size[2], x.size[1]))
   end
 end
 
-function sign(x::CTransposeAtom)
+function sign(x::AdjointAtom)
   return sign(x.children[1])
 end
 
-function monotonicity(x::CTransposeAtom)
+function monotonicity(x::AdjointAtom)
   return (Nondecreasing(),)
 end
 
-function curvature(x::CTransposeAtom)
+function curvature(x::AdjointAtom)
   return ConstVexity()
 end
 
-function evaluate(x::CTransposeAtom)
+function evaluate(x::AdjointAtom)
   return evaluate(x.children[1])'
 end
 
 # Since everything is vectorized, we simply need to multiply x by a permutation
 # matrix such that coeff * vectorized(x) - vectorized(x') = 0
-function conic_form!(x::CTransposeAtom, unique_conic_forms::UniqueConicForms=UniqueConicForms())
+function conic_form!(x::AdjointAtom, unique_conic_forms::UniqueConicForms=UniqueConicForms())
   if !has_conic_form(unique_conic_forms, x)
     objective = conic_form!(x.children[1], unique_conic_forms)
 
@@ -136,9 +136,5 @@ function conic_form!(x::CTransposeAtom, unique_conic_forms::UniqueConicForms=Uni
   return get_conic_form(unique_conic_forms, x)
 end
 
-
-ctranspose(x::AbstractExpr) = CTransposeAtom(x)
-ctranspose(x::Constant) = Constant(x.value')
-
-adjoint(x::AbstractExpr) = CTransposeAtom(x)
+adjoint(x::AbstractExpr) = AdjointAtom(x)
 adjoint(x::Constant) = Constant(x.value')
