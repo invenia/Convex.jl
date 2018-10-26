@@ -1,5 +1,6 @@
 using Convex
 using Test
+import Random.shuffle
 
 TOL = 1e-3
 
@@ -23,7 +24,8 @@ TOL = 1e-3
 
   @testset "maximum atom" begin
     x = Variable(10)
-    a = rand(10, 1)
+#   a = rand(10, 1)
+    a = shuffle(collect(0.1:0.1:1.0))
     p = minimize(maximum(x), x >= a)
     @test vexity(p) == ConvexVexity()
     solve!(p)
@@ -33,7 +35,8 @@ TOL = 1e-3
 
   @testset "minimum atom" begin
     x = Variable(1)
-    a = rand(10, 10)
+#   a = rand(10, 10)
+    a = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
     p = maximize(minimum(x), x <= a)
     @test vexity(p) == ConvexVexity()
     solve!(p)
@@ -56,12 +59,14 @@ TOL = 1e-3
 
   # skip the following two test sets for SCS solver
   # as it fails for some set of random numbers
-  if typeof(get_default_solver()).name.name != :SCSSolver
+# if typeof(get_default_solver()).name.name != :SCSSolver
     @testset "max atom" begin
       x = Variable(10, 10)
       y = Variable(10, 10)
-      a = rand(10, 10)
-      b = rand(10, 10)
+#     a = rand(10, 10)
+      a = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
+#     b = rand(10, 10)
+      b = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
       p = minimize(maximum(max(x, y)), [x >= a, y >= b])
       @test vexity(p) == ConvexVexity()
       solve!(p)
@@ -74,8 +79,10 @@ TOL = 1e-3
     @testset "min atom" begin
       x = Variable(10, 10)
       y = Variable(10, 10)
-      a = rand(10, 10)
-      b = rand(10, 10)
+#     a = rand(10, 10)
+      a = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
+#     b = rand(10, 10)
+      b = reshape(shuffle(collect(0.01:0.01:1.0)), (10, 10))
       p = maximize(minimum(min(x, y)), [x <= a, y <= b])
       @test vexity(p) == ConvexVexity()
       solve!(p)
@@ -84,7 +91,7 @@ TOL = 1e-3
       @test p.optval ≈ min(min_a, min_b) atol=TOL
       @test evaluate(minimum(min(x, y))) ≈ min(min_a, min_b) atol=TOL
     end
-  end
+# end
 
   @testset "pos atom" begin
     x = Variable(3)
