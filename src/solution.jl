@@ -79,7 +79,6 @@ end
 function load_problem!(m::MathProgBase.AbstractConicModel, c, A, b, cones, vartypes)
   # no conic constraints on variables
   var_cones = fill((:Free, 1:size(A, 2)),1)
-  # TODO: Get rid of full once c and b are not sparse
   MathProgBase.loadproblem!(m, vec(Array(c)), A, vec(Array(b)), cones, var_cones)
 
   # add integer and binary constraints on variables
@@ -179,7 +178,7 @@ function load_primal_solution!(primal::Array{Float64,1}, var_to_ranges::Dict{UIn
   end
 end
 
-function populate_duals!(constraints::Array{ConicConstr}, dual::Array{T, 1}) where T
+function populate_duals!(constraints::Array{ConicConstr}, dual::Vector)
   constr_index = 1
   for constraint in constraints
     # conic_constr_to_constr only has keys for conic constraints with a single objective

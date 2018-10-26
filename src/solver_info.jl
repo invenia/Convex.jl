@@ -1,7 +1,7 @@
 using Pkg
 import MathProgBase
 export can_solve_mip, can_solve_socp, can_solve_sdp, can_solve_exp
-export set_default_solver, get_default_solver
+export set_default_solver, get_default_solver, isinstalled
 
 function set_default_solver(solver::MathProgBase.AbstractMathProgSolver)
   global DEFAULT_SOLVER
@@ -25,9 +25,7 @@ solvers = [("ECOS", "ECOSSolver"), ("SCS", "SCSSolver"), ("Gurobi", "GurobiSolve
 
 function isinstalled(pkg)
     for path in Base.DEPOT_PATH
-        if isdir(joinpath(path, pkg))
-            return true
-        elseif isdir(joinpath(path, "packages", pkg))
+        if isdir(joinpath(path, pkg)) || isdir(joinpath(path, "packages", pkg))
             return true
         end
     end
@@ -36,17 +34,14 @@ end
 
 for (dir, solver) in solvers
   if isinstalled(dir) && DEFAULT_SOLVER == nothing
-    eval(Meta.parse("using "*dir))
-    eval(Meta.parse("set_default_solver("*solver*"())"))
+    eval(Meta.parse("using $dir"))
+    eval(Meta.parse("set_default_solver($solver())"))
   end
 end
 
 
 if get_default_solver() == nothing
-  packages = ""
-  for (dir, solver) in solvers
-  global packages = packages*dir*" | "
-  end
+  packages = join([dir for (dir, solver) in solvers], " | ")
   @warn "***********************************************************************************************
        You don't have any of
        "*packages*" installed.

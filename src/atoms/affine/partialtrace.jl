@@ -65,7 +65,7 @@ function evaluate(x::PartialTraceAtom)
         return sum([term(ρ, j) for j in 1:dims[sys]])
     end
     sub_systems = [subsystem(i) for i in 1:length(dims)]
-    a = diagm(0 => ones(1))
+    a = Matrix(1.0I, 1, 1)
     for i in 1:length(dims)
         if i == x.sys
             continue
