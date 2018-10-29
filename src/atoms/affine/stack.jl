@@ -118,7 +118,7 @@ hcat(args::Value...) = Base.cat(args..., dims=2)
 # TODO: implement vertical concatenation in a more efficient way
 vcat(args::AbstractExpr...) = transpose(HcatAtom(map(transpose, args)...))
 vcat(args::AbstractExprOrValue...) = transpose(HcatAtom(map(arg -> transpose(convert(AbstractExpr, arg)), args)...))
-# vcat(args::Value...) = Base.cat(args..., dims=1) # Note: this makes general vcat slower for anyone using Convex...
+vcat(args::Value...) = Base.cat(args..., dims=1) # Note: this makes general vcat slower for anyone using Convex...
 
 
 function hvcat(rows::Tuple{Vararg{Int}}, args::AbstractExprOrValue...)
