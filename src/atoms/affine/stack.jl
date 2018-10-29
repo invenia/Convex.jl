@@ -137,6 +137,6 @@ Base.vect(args::T...) where {T<:AbstractExpr} = transpose(HcatAtom(map(transpose
 Base.vect(args::AbstractExpr...) = transpose(HcatAtom(map(transpose, args)...))
 Base.vect(args::AbstractExprOrValue...) = transpose(HcatAtom(map(arg -> transpose(convert(AbstractExpr, arg)), args)...))
 
-# function Base.vect(args::Value...)
-#    return collect(args)
-# end
+function Base.vect(args::Value...)
+   return collect(args)
+end
